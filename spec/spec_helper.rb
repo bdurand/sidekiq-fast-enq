@@ -6,6 +6,8 @@ gem 'sidekiq', *sidekiq_version
 
 require File.expand_path('../../lib/sidekiq-fast-enq', __FILE__)
 require 'timecop'
+require 'celluloid'
+require 'sidekiq/scheduled'
 require 'sidekiq/api'
 
 RSpec.configure do |config|

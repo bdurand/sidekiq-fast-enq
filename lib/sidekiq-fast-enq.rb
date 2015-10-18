@@ -5,7 +5,6 @@ require 'sidekiq'
 # works much better in large sidekiq deployments with many processes because it eliminates
 # race conditions checking the scheduled queues.
 class SidekiqFastEnq
-  SETS = %w(retry schedule).freeze
   
   def initialize
     @script = lua_script
@@ -15,8 +14,7 @@ class SidekiqFastEnq
   end
   
   def enqueue_jobs(now = Time.now.to_f.to_s, sorted_sets = nil)
-    # Sidekiq::Scheduled is loaded weird because it requires celluloid which sidekiq needs to load in a special way.
-    sorted_sets ||= (defined?(Sidekiq::Scheduled::SETS) ? Sidekiq::Scheduled::SETS : SETS)
+    sorted_sets ||= Sidekiq::Scheduled::SETS
     
     # A job's "score" in Redis is the time at which it should be processed.
     # Just check Redis for the set of jobs with a timestamp before now.
