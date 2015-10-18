@@ -1,10 +1,12 @@
-require 'sidekiq/scheduled'
+require 'sidekiq'
 
 # Implementation of the Sidekiq::Scheduled::Enq class that uses a server side Lua script
 # to atomically get the next scheduled job to run and then pops it from the list. This
 # works much better in large sidekiq deployments with many processes because it eliminates
 # race conditions checking the scheduled queues.
 class SidekiqFastEnq
+  SETS = %w(retry schedule).freeze
+  
   def initialize
     @script = lua_script
     Sidekiq.redis do |conn|
@@ -12,7 +14,10 @@ class SidekiqFastEnq
     end
   end
   
-  def enqueue_jobs(now = Time.now.to_f.to_s, sorted_sets = Sidekiq::Scheduled::SETS)
+  def enqueue_jobs(now = Time.now.to_f.to_s, sorted_sets = nil)
+    # Sidekiq::Scheduled is loaded weird because it requires celluloid which sidekiq needs to load in a special way.
+    sorted_sets ||= (defined?(Sidekiq::Scheduled::SETS) ? Sidekiq::Scheduled::SETS : SETS)
+    
     # A job's "score" in Redis is the time at which it should be processed.
     # Just check Redis for the set of jobs with a timestamp before now.
     Sidekiq.redis do |conn|

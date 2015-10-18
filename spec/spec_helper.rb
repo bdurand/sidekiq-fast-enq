@@ -4,8 +4,6 @@
 sidekiq_version = Array(ENV["SIDEKIQ_VERSION"] || "~>3.0")
 gem 'sidekiq', *sidekiq_version
 
-require 'celluloid'
-
 require File.expand_path('../../lib/sidekiq-fast-enq', __FILE__)
 require 'timecop'
 require 'sidekiq/api'

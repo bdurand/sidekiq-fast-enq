@@ -20,6 +20,8 @@ end
 task :load_test, [:jobs_size, :workers, :fast] do |t, args|
   require 'celluloid'
   require File.expand_path('../lib/sidekiq-fast-enq', __FILE__)
+  require 'sidekiq/scheduled'
+  require 'sidekiq/api'
   
   class FastEnqLoadTestWorker
     include Sidekiq::Worker
