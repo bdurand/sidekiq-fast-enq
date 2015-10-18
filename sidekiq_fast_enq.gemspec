@@ -3,7 +3,7 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
-  spec.name          = "sidekiq_fast_enq"
+  spec.name          = "sidekiq-fast-enq"
   spec.version       = File.read(File.expand_path("../VERSION", __FILE__)).chomp
   spec.authors       = ["We Heart It", "Brian Durand"]
   spec.email         = ["dev@weheartit.com", "bbdurand@gmail.com"]
