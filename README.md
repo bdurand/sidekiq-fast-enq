@@ -6,10 +6,10 @@ This gem re-implements the same logic, but using a server side Lua script so tha
 
 ### Usage
 
-In your sidekiq configuration you need to set the `:scheduled_enq` option to `Sidekiq::Scheduled::FastEnq` (only available in sidekiq 3.4.0 and later)
+In your sidekiq configuration you need to set the `:scheduled_enq` option to `SidekiqFastEnq` (only available in sidekiq 3.4.0 and later)
 
 ```ruby
-Sidekiq.options[:scheduled_enq] = Sidekiq::Scheduled::FastEnq
+Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
 ```
 
 Note: you must be using Redis Server 2.6.0 or later with this gem.

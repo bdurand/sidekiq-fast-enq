@@ -19,7 +19,7 @@ end
 
 task :load_test, [:jobs_size, :workers, :fast] do |t, args|
   require 'celluloid'
-  require File.expand_path('../lib/sidekiq_fast_enq', __FILE__)
+  require File.expand_path('../lib/sidekiq-fast-enq', __FILE__)
   
   class FastEnqLoadTestWorker
     include Sidekiq::Worker
@@ -29,7 +29,7 @@ task :load_test, [:jobs_size, :workers, :fast] do |t, args|
   
   jobs_size = args[:jobs_size].to_i
   workers_size = args[:workers].to_i
-  klass = (args[:fast] == 'fast' ? Sidekiq::Scheduled::FastEnq : Sidekiq::Scheduled::Enq)
+  klass = (args[:fast] == 'fast' ? SidekiqFastEnq : Sidekiq::Scheduled::Enq)
   
   Sidekiq.configure_server do |config|
     config.redis = {:namespace => "sidekiq_fast_enq_load_test"}

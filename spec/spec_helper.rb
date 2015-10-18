@@ -6,7 +6,7 @@ gem 'sidekiq', *sidekiq_version
 
 require 'celluloid'
 
-require File.expand_path('../../lib/sidekiq_fast_enq', __FILE__)
+require File.expand_path('../../lib/sidekiq-fast-enq', __FILE__)
 require 'timecop'
 require 'sidekiq/api'
 
@@ -23,7 +23,7 @@ RSpec.configure do |config|
   Sidekiq.configure_server do |config|
     config.redis = {:namespace => "sidekiq_fast_enq_test"}
   end
-  Sidekiq.options[:scheduled_enq] = Sidekiq::Scheduled::FastEnq
+  Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
 end
 
 class FastEnqTestWorker

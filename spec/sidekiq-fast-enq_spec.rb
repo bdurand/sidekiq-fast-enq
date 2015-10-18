@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sidekiq::Scheduled::FastEnq do
+describe SidekiqFastEnq do
   
   let(:scheduled_set){ Sidekiq::ScheduledSet.new }
   let(:retry_set){ Sidekiq::RetrySet.new }
@@ -13,7 +13,7 @@ describe Sidekiq::Scheduled::FastEnq do
   end
   
   it "should return without doing anything if there are no scheduled jobs" do
-    Sidekiq::Scheduled::FastEnq.new.enqueue_jobs
+    SidekiqFastEnq.new.enqueue_jobs
     expect(scheduled_set.size).to eq(0)
     expect(retry_set.size).to eq(0)
     expect(default_queue.size).to eq(0)
@@ -21,7 +21,7 @@ describe Sidekiq::Scheduled::FastEnq do
   
   it "should enqueue a single elligible job from the scheduled jobs queue" do
     Timecop.travel(Time.now - 3600){ FastEnqTestWorker.perform_in(60, 'one') }
-    Sidekiq::Scheduled::FastEnq.new.enqueue_jobs
+    SidekiqFastEnq.new.enqueue_jobs
     expect(scheduled_set.size).to eq(0)
     expect(retry_set.size).to eq(0)
     expect(default_queue.size).to eq(1)
@@ -31,7 +31,7 @@ describe Sidekiq::Scheduled::FastEnq do
     Timecop.travel(Time.now - 3600){ FastEnqTestWorker.perform_in(60, 'one') }
     Timecop.travel(Time.now - 3600){ FastEnqTestWorker.perform_in(900, 'two') }
     FastEnqTestWorker.perform_in(10, 'three')
-    Sidekiq::Scheduled::FastEnq.new.enqueue_jobs
+    SidekiqFastEnq.new.enqueue_jobs
     expect(scheduled_set.size).to eq(1)
     expect(retry_set.size).to eq(0)
     expect(default_queue.size).to eq(2)
@@ -44,7 +44,7 @@ describe Sidekiq::Scheduled::FastEnq do
       end
     end
     FastEnqTestWorker.perform_in(10, 'three')
-    Sidekiq::Scheduled::FastEnq.new.enqueue_jobs
+    SidekiqFastEnq.new.enqueue_jobs
     expect(scheduled_set.size).to eq(1)
     expect(retry_set.size).to eq(0)
     expect(default_queue.size).to eq(200)
