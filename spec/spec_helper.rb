@@ -24,6 +24,7 @@ RSpec.configure do |config|
     config.redis = {:namespace => "sidekiq_fast_enq_test"}
   end
   Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
+  Sidekiq::Logging.logger = Logger.new(StringIO.new)
 end
 
 class FastEnqTestWorker

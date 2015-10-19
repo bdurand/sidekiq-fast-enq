@@ -8,6 +8,8 @@ This gem re-implements the same logic, but using a server side Lua script so tha
 
 On a single sidekiq process this implementation is about twice as fast. With 64 processes it's about nine times as fast and puts significantly less load on redis.
 
+This plugin does not alter any sidekiq internal code or data structures.
+
 ### Usage
 
 In your sidekiq configuration you need to set the `:scheduled_enq` option to `SidekiqFastEnq` (only available in sidekiq 3.4.0 and later)

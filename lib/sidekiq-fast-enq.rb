@@ -5,9 +5,11 @@ require 'sidekiq'
 # works much better in large sidekiq deployments with many processes because it eliminates
 # race conditions checking the scheduled queues.
 class SidekiqFastEnq
+  DEFAULT_BATCH_SIZE = 1000
   
-  def initialize
-    @script = lua_script
+  def initialize(batch_size = nil)
+    batch_size ||= (Sidekiq.options[:fast_enq_batch_size] || DEFAULT_BATCH_SIZE)
+    @script = lua_script(batch_size)
     Sidekiq.redis do |conn|
       @script_sha_1 = conn.script(:load, @script)
     end
@@ -15,20 +17,40 @@ class SidekiqFastEnq
   
   def enqueue_jobs(now = Time.now.to_f.to_s, sorted_sets = nil)
     sorted_sets ||= Sidekiq::Scheduled::SETS
+    logger = Sidekiq::Logging.logger
     
     # A job's "score" in Redis is the time at which it should be processed.
     # Just check Redis for the set of jobs with a timestamp before now.
     Sidekiq.redis do |conn|
       namespace = conn.namespace if conn.respond_to?(:namespace)
       sorted_sets.each do |sorted_set|
-        sorted_set = "#{namespace}:#{sorted_set}" if namespace
+        redis_set = (namespace ? "#{namespace}:#{sorted_set}" : sorted_set)
+        jobs_count = 0
+        start_time = Time.now
+        pop_time = 0.0
+        enqueue_time = 0.0
+        
         # Get the next item in the queue if it's score (time to execute) is <= now.
         # We need to go through the list one at a time to reduce the risk of something
         # going wrong between the time jobs are popped from the scheduled queue and when
         # they are pushed onto a work queue and losing the jobs.
-        while job = pop_job(conn, sorted_set, now) do
+        loop do
+          t = Time.now
+          job = pop_job(conn, redis_set, now)
+          pop_time += (Time.now - t)
+          break if job.nil?
+          t = Time.now
           Sidekiq::Client.push(Sidekiq.load_json(job))
-          Sidekiq::Logging.logger.debug("enqueued #{sorted_set}: #{job}") if Sidekiq::Logging.logger.debug?
+          enqueue_time += (Time.now - t)
+          jobs_count += 1
+          logger.debug("enqueued #{sorted_set}: #{job}") if logger && logger.debug?
+        end
+        
+        if jobs_count > 0 && logger && logger.info?
+          time_ms = ((Time.now - start_time) * 1000).round
+          pop_ms = (pop_time * 1000).round
+          enqueue_ms = (enqueue_time * 1000).round
+          logger.info("SidekiqFastEnq enqueued #{jobs_count} from #{sorted_set} in #{time_ms}ms (pop: #{pop_ms}ms; enqueue: #{enqueue_ms}ms)")
         end
       end
     end
@@ -60,7 +82,9 @@ class SidekiqFastEnq
 
   # Lua script that will atomically get the next element from the sorted set of scheduled jobs
   # and pop it from the list.
-  def lua_script
+  def lua_script(batch_size)
+    batch_size = batch_size.to_i
+    batch_size = DEFAULT_BATCH_SIZE if batch_size <= 0
     <<-LUA
     local sorted_set = ARGV[1]
     local now = tonumber(ARGV[2])
@@ -71,14 +95,14 @@ class SidekiqFastEnq
       local job = redis.call('lpop', ready_cache)
       if not job then
         -- If no jobs in the cache then get the next 100 jobs ready to be executed
-        local ready_jobs = redis.call('zrangebyscore', sorted_set, '-inf', now, 'LIMIT', 0, 100)
+        local ready_jobs = redis.call('zrangebyscore', sorted_set, '-inf', now, 'LIMIT', 0, #{batch_size})
         if #ready_jobs == 1 then
           job = ready_jobs[1]
         elseif #ready_jobs > 1 then
           -- If more than one job is ready, throw them in the cache which is faster to access than the sorted set
           redis.call('rpush', ready_cache, unpack(ready_jobs))
           -- Set an expiration on the cache since it's just a cache. The sorted set is still the canonical list.
-          redis.call('expire', ready_cache, 10)
+          redis.call('expire', ready_cache, 60)
           job = redis.call('lpop', ready_cache)
         end
       end
