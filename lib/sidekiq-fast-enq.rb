@@ -47,10 +47,8 @@ class SidekiqFastEnq
         end
         
         if jobs_count > 0 && logger && logger.info?
-          time_ms = ((Time.now - start_time) * 1000).round
-          pop_ms = (pop_time * 1000).round
-          enqueue_ms = (enqueue_time * 1000).round
-          logger.info("SidekiqFastEnq enqueued #{jobs_count} from #{sorted_set} in #{time_ms}ms (pop: #{pop_ms}ms; enqueue: #{enqueue_ms}ms)")
+          loop_time = Time.now - start_time
+          logger.info("SidekiqFastEnq enqueued #{jobs_count} from #{sorted_set} in #{loop_time.round(3)}s (pop: #{pop_time.round(3)}s; enqueue: #{enqueue_time.round(3)}s)")
         end
       end
     end
