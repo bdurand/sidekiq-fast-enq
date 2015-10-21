@@ -12,10 +12,12 @@ This plugin does not alter any sidekiq internal code or data structures.
 
 ### Usage
 
-In your sidekiq configuration you need to set the `:scheduled_enq` option to `SidekiqFastEnq` (only available in sidekiq 3.4.0 and later)
+In your sidekiq configuration you need to set the `:scheduled_enq` option to `SidekiqFastEnq` (only available in sidekiq 3.4.0 and later). You might also want to hard code a value for the `:poll_interval_average` option as well. If this option is not set the polling interval for checking the scheduled queues is based on the number of processes in an effort to reduce the effects of the race condition. It is not needed with this code and scheduled jobs will be enqueued closer to their scheduled time without it.
 
 ```ruby
 Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
+Sidekiq.options[:poll_interval_average] = 30
 ```
 
+Since this gem eliminates the race condition of having too many processes processing th
 Note: this gem utilizes server side Lua scripting so you must be using Redis Server 2.6.0 or later.
