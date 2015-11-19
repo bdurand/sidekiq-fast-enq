@@ -1,12 +1,13 @@
 # Breaks if not required. Sidekiq doesn't directly require in
 # the load process.
 
-sidekiq_version = Array(ENV["SIDEKIQ_VERSION"] || "~>3.0")
+sidekiq_version = Array(ENV["SIDEKIQ_VERSION"] || ">=3.4")
 gem 'sidekiq', *sidekiq_version
 
 require File.expand_path('../../lib/sidekiq-fast-enq', __FILE__)
 require 'timecop'
-require 'celluloid'
+require 'sidekiq/version'
+require 'celluloid' if Sidekiq::VERSION.to_i < 4
 require 'sidekiq/scheduled'
 require 'sidekiq/api'
 
