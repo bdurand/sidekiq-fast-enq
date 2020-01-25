@@ -20,7 +20,7 @@ matrix:
   - rvm: "2.5"
     gemfile: gemfiles/sidekiq_4.gemfile
 
-  - rvm: "2.2.2"
+  - rvm: "2.3"
     gemfile: gemfiles/sidekiq_3.gemfile
 
 script:
