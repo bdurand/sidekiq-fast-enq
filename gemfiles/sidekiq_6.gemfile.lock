@@ -1,5 +1,5 @@
 PATH
-  remote: .
+  remote: ..
   specs:
     sidekiq-fast-enq (1.0.2)
       sidekiq (>= 3.4)
@@ -47,6 +47,7 @@ DEPENDENCIES
   bundler
   rake
   rspec
+  sidekiq (~> 6.0)
   sidekiq-fast-enq!
   timecop
 

@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/weheartit/sidekiq-fast-enq.svg?branch=master)](https://travis-ci.org/weheartit/sidekiq-fast-enq)
 [![Maintainability](https://api.codeclimate.com/v1/badges/cafd3e45419babe96ac4/maintainability)](https://codeclimate.com/github/weheartit/sidekiq-fast-enq/maintainability)
 
 This gem provides a much more efficien implementation for checking the Sidekiq scheduled and retry queues. This can provide a significant performance boost for large sidekiq implementations that utilize many processes. It can also reduce load on the redis server.

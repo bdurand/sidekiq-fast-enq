@@ -6,7 +6,7 @@ require 'sidekiq'
 # race conditions checking the scheduled queues.
 class SidekiqFastEnq
   DEFAULT_BATCH_SIZE = 1000
-  
+
   def initialize(batch_size = nil)
     batch_size ||= (Sidekiq.options[:fast_enq_batch_size] || DEFAULT_BATCH_SIZE)
     @script = lua_script(batch_size)
@@ -14,11 +14,11 @@ class SidekiqFastEnq
       @script_sha_1 = conn.script(:load, @script)
     end
   end
-  
+
   def enqueue_jobs(now = Time.now.to_f.to_s, sorted_sets = nil)
     sorted_sets ||= Sidekiq::Scheduled::SETS
-    logger = Sidekiq::Logging.logger
-    
+    logger = Sidekiq.logger
+
     # A job's "score" in Redis is the time at which it should be processed.
     # Just check Redis for the set of jobs with a timestamp before now.
     Sidekiq.redis do |conn|
@@ -29,7 +29,7 @@ class SidekiqFastEnq
         start_time = Time.now
         pop_time = 0.0
         enqueue_time = 0.0
-        
+
         # Get the next item in the queue if it's score (time to execute) is <= now.
         # We need to go through the list one at a time to reduce the risk of something
         # going wrong between the time jobs are popped from the scheduled queue and when
@@ -45,7 +45,7 @@ class SidekiqFastEnq
           jobs_count += 1
           logger.debug("enqueued #{sorted_set}: #{job}") if logger && logger.debug?
         end
-        
+
         if jobs_count > 0 && logger && logger.info?
           loop_time = Time.now - start_time
           logger.info("SidekiqFastEnq enqueued #{jobs_count} from #{sorted_set} in #{loop_time.round(3)}s (pop: #{pop_time.round(3)}s; enqueue: #{enqueue_time.round(3)}s)")
@@ -61,7 +61,7 @@ class SidekiqFastEnq
   def pop_job(conn, sorted_set, now)
     eval_script(conn, @script, @script_sha_1, [sorted_set, now])
   end
-  
+
   # Evaluate and execute a Lua script on the redis server.
   def eval_script(conn, script, sha1, argv=[])
     begin
@@ -87,7 +87,7 @@ class SidekiqFastEnq
     local sorted_set = ARGV[1]
     local now = tonumber(ARGV[2])
     local ready_cache = sorted_set .. '.cache'
-    
+
     while true do
       -- Check a cached list of jobs that are ready to execute
       local job = redis.call('lpop', ready_cache)

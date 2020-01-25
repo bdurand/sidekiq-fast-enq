@@ -1,10 +1,8 @@
 # Breaks if not required. Sidekiq doesn't directly require in
 # the load process.
 
-sidekiq_version = Array(ENV["SIDEKIQ_VERSION"] || ">=3.4")
-gem 'sidekiq', *sidekiq_version
+require_relative '../lib/sidekiq-fast-enq'
 
-require File.expand_path('../../lib/sidekiq-fast-enq', __FILE__)
 require 'timecop'
 require 'sidekiq/version'
 require 'celluloid' if Sidekiq::VERSION.to_i < 4
@@ -20,17 +18,17 @@ RSpec.configure do |config|
   # the seed, which is printed after each run.
   #     --seed 1234
   config.order = 'random'
-  
+
   Sidekiq.configure_server do |config|
     config.redis = {:namespace => "sidekiq_fast_enq_test"}
   end
   Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
-  Sidekiq::Logging.logger = Logger.new(StringIO.new)
+  Sidekiq.logger.level = Logger::FATAL
 end
 
 class FastEnqTestWorker
   include Sidekiq::Worker
-  
+
   def perform(arg)
   end
 end
