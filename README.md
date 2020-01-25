@@ -21,5 +21,4 @@ Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
 Sidekiq.options[:poll_interval_average] = 30
 ```
 
-Since this gem eliminates the race condition of having too many processes processing th
 Note: this gem utilizes server side Lua scripting so you must be using Redis Server 2.6.0 or later.
