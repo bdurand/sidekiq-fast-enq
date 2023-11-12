@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'sidekiq'
+require "sidekiq"
 
 # Implementation of the Sidekiq::Scheduled::Enq class that uses a server side Lua script
 # to atomically get the next scheduled job to run and then pops it from the list. This
@@ -45,10 +45,10 @@ class SidekiqFastEnq
           Sidekiq::Client.push(Sidekiq.load_json(job))
           enqueue_time += (Time.now - t)
           jobs_count += 1
-          logger.debug("enqueued #{sorted_set}: #{job}") if logger && logger.debug?
+          logger.debug("enqueued #{sorted_set}: #{job}") if logger&.debug?
         end
 
-        if jobs_count > 0 && logger && logger.info?
+        if jobs_count > 0 && logger&.info?
           loop_time = Time.now - start_time
           logger.info("SidekiqFastEnq enqueued #{jobs_count} from #{sorted_set} in #{loop_time.round(3)}s (pop: #{pop_time.round(3)}s; enqueue: #{enqueue_time.round(3)}s)")
         end
@@ -65,18 +65,16 @@ class SidekiqFastEnq
   end
 
   # Evaluate and execute a Lua script on the redis server.
-  def eval_script(conn, script, sha1, argv=[])
-    begin
-      conn.evalsha(sha1, [], argv)
-    rescue Redis::CommandError => e
-      if e.message.include?('NOSCRIPT'.freeze)
-        t = Time.now
-        sha1 = conn.script(:load, script)
-        Sidekiq::Logging.logger.info("loaded script #{sha1} in #{Time.now - t}s")
-        retry
-      else
-        raise e
-      end
+  def eval_script(conn, script, sha1, argv = [])
+    conn.evalsha(sha1, [], argv)
+  rescue Redis::CommandError => e
+    if e.message.include?("NOSCRIPT")
+      t = Time.now
+      sha1 = conn.script(:load, script)
+      Sidekiq::Logging.logger.info("loaded script #{sha1} in #{Time.now - t}s")
+      retry
+    else
+      raise e
     end
   end
 

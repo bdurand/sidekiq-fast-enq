@@ -1,13 +1,13 @@
 # Breaks if not required. Sidekiq doesn't directly require in
 # the load process.
 
-require_relative '../lib/sidekiq-fast-enq'
+require_relative "../lib/sidekiq-fast-enq"
 
-require 'timecop'
-require 'sidekiq/version'
-require 'celluloid' if Sidekiq::VERSION.to_i < 4
-require 'sidekiq/scheduled'
-require 'sidekiq/api'
+require "timecop"
+require "sidekiq/version"
+require "celluloid" if Sidekiq::VERSION.to_i < 4
+require "sidekiq/scheduled"
+require "sidekiq/api"
 
 RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
@@ -17,10 +17,10 @@ RSpec.configure do |config|
   # order dependency and want to debug it, you can fix the order by providing
   # the seed, which is printed after each run.
   #     --seed 1234
-  config.order = 'random'
+  config.order = "random"
 
   Sidekiq.configure_server do |config|
-    config.redis = {:namespace => "sidekiq_fast_enq_test"}
+    config.redis = {namespace: "sidekiq_fast_enq_test"}
   end
   Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
   Sidekiq.logger.level = Logger::FATAL
