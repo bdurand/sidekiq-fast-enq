@@ -10,7 +10,8 @@ class SidekiqFastEnq
   DEFAULT_BATCH_SIZE = 1000
 
   def initialize(batch_size = nil)
-    batch_size ||= (Sidekiq.options[:fast_enq_batch_size] || DEFAULT_BATCH_SIZE)
+    options = (Sidekiq.respond_to?(:default_configuration) ? Sidekiq.default_configuration : Sidekiq.options)
+    batch_size ||= (options[:fast_enq_batch_size] || DEFAULT_BATCH_SIZE)
     @script = lua_script(batch_size)
     Sidekiq.redis do |conn|
       @script_sha_1 = conn.script(:load, @script)

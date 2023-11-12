@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
 
   spec.require_paths = ["lib"]
 
-  spec.add_dependency("sidekiq", ">=3.4")
+  spec.add_dependency("sidekiq", ">=5.0")
 
   spec.add_development_dependency "bundler"
 

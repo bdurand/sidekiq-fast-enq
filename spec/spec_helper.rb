@@ -22,7 +22,10 @@ RSpec.configure do |config|
   Sidekiq.configure_server do |config|
     config.redis = {namespace: "sidekiq_fast_enq_test"}
   end
-  Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
+
+  options = (Sidekiq.respond_to?(:default_configuration) ? Sidekiq.default_configuration : Sidekiq.options)
+  options[:scheduled_enq] = SidekiqFastEnq
+
   Sidekiq.logger.level = Logger::FATAL
 end
 
