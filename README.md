@@ -1,5 +1,7 @@
 Sidekiq Fast Enqueuing
 
+[![Continuous Integration](https://github.com/bdurand/sidekiq-fast-enq/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/sidekiq-fast-enq/actions/workflows/continuous_integration.yml)
+[![Regression Test](https://github.com/bdurand/sidekiq-fast-enq/actions/workflows/regression_test.yml/badge.svg)](https://github.com/bdurand/sidekiq-fast-enq/actions/workflows/regression_test.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 This gem provides a much more efficien implementation for checking the Sidekiq scheduled and retry queues. This can provide a significant performance boost for large sidekiq implementations that utilize many processes. It can also reduce load on the redis server.
