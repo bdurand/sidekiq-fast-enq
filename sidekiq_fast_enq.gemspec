@@ -1,27 +1,34 @@
-# coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
-$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-
 Gem::Specification.new do |spec|
-  spec.name          = "sidekiq-fast-enq"
-  spec.version       = File.read(File.expand_path("../VERSION", __FILE__)).chomp
-  spec.authors       = ["We Heart It", "Brian Durand"]
-  spec.email         = ["dev@weheartit.com", "bbdurand@gmail.com"]
-  spec.summary       = "More efficient scheduled job queue implementation for sidekiq"
-  spec.description   = "More efficient scheduled job queue implementation for sidekiq to increase throughput in large installations."
-  spec.homepage      = "https://github.com/weheartit/sidekiq_fast_enq"
-  spec.license       = "MIT"
+  spec.name = "sidekiq-fast-enq"
+  spec.version = File.read(File.expand_path("VERSION", __dir__)).strip
+  spec.authors = ["Brian Durand"]
+  spec.email = ["bbdurand@gmail.com"]
 
-  spec.files         = `git ls-files`.split($/)
-  spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
+  spec.summary = "More efficient scheduled job queue implementation for sidekiq to increase throughput in large installations."
+  spec.homepage = "https://github.com/bdurand/sidekiq-fast-enq"
+  spec.license = "MIT"
+
+  # Specify which files should be added to the gem when it is released.
+  # The `git ls-files -z` loads the files in the RubyGem that have been added into git.
+  ignore_files = %w[
+    .
+    Appraisals
+    Gemfile
+    Gemfile.lock
+    Rakefile
+    bin/
+    gemfiles/
+    spec/
+  ]
+  spec.files = Dir.chdir(__dir__) do
+    `git ls-files -z`.split("\x0").reject { |f| ignore_files.any? { |path| f.start_with?(path) } }
+  end
+
   spec.require_paths = ["lib"]
 
   spec.add_dependency('sidekiq', '>=3.4')
 
   spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency "rspec"
-  spec.add_development_dependency "timecop"
-  spec.add_development_dependency "appraisal"
+
+  spec.required_ruby_version = ">= 2.4"
 end

@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.org/weheartit/sidekiq-fast-enq.svg?branch=master)](https://travis-ci.org/weheartit/sidekiq-fast-enq)
-[![Maintainability](https://api.codeclimate.com/v1/badges/cafd3e45419babe96ac4/maintainability)](https://codeclimate.com/github/weheartit/sidekiq-fast-enq/maintainability)
+Sidekiq Fast Enqueuing
+
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 This gem provides a much more efficien implementation for checking the Sidekiq scheduled and retry queues. This can provide a significant performance boost for large sidekiq implementations that utilize many processes. It can also reduce load on the redis server.
 
@@ -22,4 +23,34 @@ Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
 Sidekiq.options[:poll_interval_average] = 30
 ```
 
-Note: this gem utilizes server side Lua scripting so you must be using Redis Server 2.6.0 or later.
+### Redis requirement
+
+Redis server 2.6 or greater is required for this code.
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'sidekiq-fast-enq'
+```
+
+And then execute:
+```bash
+$ bundle
+```
+
+Or install it yourself as:
+```bash
+$ gem install sidekiq-fast-enq
+```
+
+## Contributing
+
+Fork the repository and open a pull request on GitHub.
+
+Please use the [standardrb](https://github.com/testdouble/standard) syntax and lint your code with `standardrb --fix` before submitting.
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).

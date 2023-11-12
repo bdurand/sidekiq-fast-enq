@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq'
 
 # Implementation of the Sidekiq::Scheduled::Enq class that uses a server side Lua script
