@@ -1,5 +1,6 @@
-[![Build Status](https://travis-ci.org/weheartit/sidekiq-fast-enq.svg?branch=master)](https://travis-ci.org/weheartit/sidekiq-fast-enq)
-[![Maintainability](https://api.codeclimate.com/v1/badges/cafd3e45419babe96ac4/maintainability)](https://codeclimate.com/github/weheartit/sidekiq-fast-enq/maintainability)
+Sidekiq Fast Enqueuing
+
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 
 This gem provides a much more efficien implementation for checking the Sidekiq scheduled and retry queues. This can provide a significant performance boost for large sidekiq implementations that utilize many processes. It can also reduce load on the redis server.
 
@@ -18,8 +19,46 @@ This plugin does not alter any sidekiq internal code or data structures.
 In your sidekiq configuration you need to set the `:scheduled_enq` option to `SidekiqFastEnq` (only available in sidekiq 3.4.0 and later). You might also want to hard code a value for the `:poll_interval_average` option as well. If this option is not set the polling interval for checking the scheduled queues is based on the number of processes in an effort to reduce the effects of the race condition. It is not needed with this code and scheduled jobs will be enqueued closer to their scheduled time without it.
 
 ```ruby
+Sidekiq.default_configuration[:scheduled_enq] = SidekiqFastEnq
+Sidekiq.default_configuration[:poll_interval_average] = 30
+```
+
+For Sidekiq versions prior to version 7:
+
+```ruby
 Sidekiq.options[:scheduled_enq] = SidekiqFastEnq
 Sidekiq.options[:poll_interval_average] = 30
 ```
 
-Note: this gem utilizes server side Lua scripting so you must be using Redis Server 2.6.0 or later.
+
+### Redis requirement
+
+Redis server 2.6 or greater is required for this code.
+
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'sidekiq-fast-enq'
+```
+
+And then execute:
+```bash
+$ bundle
+```
+
+Or install it yourself as:
+```bash
+$ gem install sidekiq-fast-enq
+```
+
+## Contributing
+
+Fork the repository and open a pull request on GitHub.
+
+Please use the [standardrb](https://github.com/testdouble/standard) syntax and lint your code with `standardrb --fix` before submitting.
+
+## License
+
+The gem is available as open source under the terms of the [MIT License](https://opensource.org/licenses/MIT).
