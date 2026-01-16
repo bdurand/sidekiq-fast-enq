@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require "spec_helper"
 
-describe SidekiqFastEnq do
+RSpec.describe SidekiqFastEnq do
   let(:scheduled_set) { Sidekiq::ScheduledSet.new }
   let(:retry_set) { Sidekiq::RetrySet.new }
   let(:default_queue) { Sidekiq::Queue.new }

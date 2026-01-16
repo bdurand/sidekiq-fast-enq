@@ -1,9 +1,11 @@
 Sidekiq Fast Enqueuing
 
 [![Continuous Integration](https://github.com/bdurand/sidekiq-fast-enq/actions/workflows/continuous_integration.yml/badge.svg)](https://github.com/bdurand/sidekiq-fast-enq/actions/workflows/continuous_integration.yml)
-[![Regression Test](https://github.com/bdurand/sidekiq-fast-enq/actions/workflows/regression_test.yml/badge.svg)](https://github.com/bdurand/sidekiq-fast-enq/actions/workflows/regression_test.yml)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://github.com/testdouble/standard)
 [![Gem Version](https://badge.fury.io/rb/sidekiq-fast-enq.svg)](https://badge.fury.io/rb/sidekiq-fast-enq)
+
+> [!NOTE]
+> This gem is no longer needed starting with Sidekiq version 6.3. That version addressed the performance issues with the scheduled and retry queues that this gem was created to solve.
 
 This gem provides a much more efficien implementation for checking the Sidekiq scheduled and retry queues. This can provide a significant performance boost for large sidekiq implementations that utilize many processes. It can also reduce load on the redis server.
 
@@ -37,6 +39,12 @@ Sidekiq.options[:poll_interval_average] = 30
 ### Redis requirement
 
 Redis server 2.6 or greater is required for this code.
+
+You can run one locally with docker:
+
+```bash
+docker run --rm -p 6379:6379 redis
+```
 
 ## Installation
 
