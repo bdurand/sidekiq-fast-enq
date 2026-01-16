@@ -2,6 +2,10 @@ source "https://rubygems.org"
 
 gemspec
 
+gem "sidekiq", "~> 6.2.0"
+
+gem "logger"
+gem "base64"
 gem "timecop"
 
 gem "dotenv"
